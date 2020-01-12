@@ -14,9 +14,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
-		//http.authorizeRequests().antMatchers("/users/**").permitAll();
+		http.authorizeRequests().antMatchers("/users/**").permitAll();
 		// To Allow only IP address of Zuul API Gateway instead of users
-		http.authorizeRequests().antMatchers("/**").hasIpAddress(env.getProperty("gateway.ip"));
+		//http.authorizeRequests().antMatchers("/**").hasIpAddress(env.getProperty("gateway.ip"));
 		
 		http.headers().frameOptions().disable();//Disable to show h2-console
 	}
