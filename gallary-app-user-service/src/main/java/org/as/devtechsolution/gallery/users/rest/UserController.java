@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-//@Data
 @RequestMapping("/users")
 public class UserController {
 
@@ -36,12 +35,6 @@ public class UserController {
 		this.userMapper = userMapper;
 	}
 
-	//UserMapper mapper;
-	
-	/*
-	 * @Autowired public void setMapper(UserMapper mapper) { this.mapper = mapper; }
-	 */
-	 
 	
 	@GetMapping("/status/check")
 	public String status() {
@@ -54,19 +47,10 @@ public class UserController {
 			)
 
 	public ResponseEntity<CreateUserResBean> createUser(@Valid @RequestBody CreateUserReqBean userReqBean) {
-		
-//		ModelMapper modelMapper = new ModelMapper(); 
-//		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-//		
-//		UserDto userDto = modelMapper.map(userReqBean, UserDto.class);
-		
+
 		UserDto userDto= userMapper.toUserDtoFromBean(userReqBean);
-		
 		UserDto createdUser = userService.createUser(userDto);
-		
-		//CreateUserResBean body = modelMapper.map(createdUser, CreateUserResBean.class);
 		CreateUserResBean body= userMapper.toUserResBeanFromUserDto(createdUser);
-		
 		return ResponseEntity.status(HttpStatus.CREATED).body(body);
 	}
 
