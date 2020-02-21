@@ -96,3 +96,11 @@ curl -X GET \
     ]
 }
 ```
+
+```
+http://localhost:8765/actuator/beans
+http://localhost:8765/actuator/routes
+http://localhost:8765/actuator/health
+http://localhost:8765/users-ms/actuator/mappings
+
+```
