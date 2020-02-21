@@ -104,3 +104,20 @@ http://localhost:8765/actuator/health
 http://localhost:8765/users-ms/actuator/mappings
 
 ```
+## users-ms.properties
+'''
+    loginurl.path=/users/login
+    ## Spring DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+    spring.datasource.url = jdbc:mysql://localhost:3306/photo_app?useSSL=false
+    spring.datasource.username = root
+    spring.datasource.password = root
+'''
+
+## application.properties
+'''
+    gateway.ip=192.168.43.244
+    token.expiration_time = 86400000
+    token.secret = hfgry463hf746hf573ydh475fhy57392222
+    loginurl.path=/users/login
+'''
+
