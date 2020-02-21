@@ -38,8 +38,11 @@ public class UserController {
 	
 	@GetMapping("/status/check")
 	public String status() {
-		return "working on port: "+ env.getProperty("local.server.port");
+		
+		return "working on port: "+ 
+		env.getProperty("local.server.port")+", with token=" +  env.getProperty("token.secret");
 	}
+	
 	
 	@PostMapping(
 			consumes= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
