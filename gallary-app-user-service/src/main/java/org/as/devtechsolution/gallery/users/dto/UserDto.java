@@ -1,6 +1,9 @@
 package org.as.devtechsolution.gallery.users.dto;
 
 import java.io.Serializable;
+import java.util.List;
+
+import org.as.devtechsolution.gallery.users.bean.AlbumResBean;
 
 import lombok.Data;
 
@@ -17,6 +20,7 @@ public class UserDto implements Serializable {
 	private  String password;
 	private  String userId;
 	private  String encryptedPassword;
+	private List<AlbumResBean> albums;
 
 	
 	
