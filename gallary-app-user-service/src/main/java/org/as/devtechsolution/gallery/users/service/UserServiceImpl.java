@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.as.devtechsolution.gallery.users.bean.AlbumResBean;
+import org.as.devtechsolution.gallery.users.client.AlbumServiceClient;
 import org.as.devtechsolution.gallery.users.dto.UserDto;
 import org.as.devtechsolution.gallery.users.entity.UserEntity;
 import org.as.devtechsolution.gallery.users.mapper.UserMapper;
@@ -30,16 +31,20 @@ public class UserServiceImpl implements UserService {
 	
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final Environment environment;
-	@Autowired
-	private RestTemplate restTemplate;
+	/*
+	 * @Autowired private RestTemplate restTemplate;
+	 */
+	private AlbumServiceClient albumServicerClient;
 	
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository,
-			UserMapper userMapper, BCryptPasswordEncoder bCryptPasswordEncoder,Environment environment) {
+			UserMapper userMapper, BCryptPasswordEncoder bCryptPasswordEncoder,Environment environment, 
+			AlbumServiceClient albumServicerClient) {
 		this.userRepository = userRepository;
 		this.userMapper = userMapper;
 		this.bCryptPasswordEncoder=bCryptPasswordEncoder;
 		this.environment=environment;
+		this.albumServicerClient=albumServicerClient;
 	}
 
 
@@ -86,29 +91,23 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userRepository.findByUserId(userId);     
         if(user == null) throw new UsernameNotFoundException("User not found");
         
-        UserDto userDto =userMapper.toUserDtoFromUser(user);  
-        String albumsUrl = String.format(environment.getProperty("albums.url"), userId);
-        
-        ResponseEntity<List<AlbumResBean>> albumsListResponse = restTemplate
-        		.exchange(albumsUrl, HttpMethod.GET, 
-        		null, new ParameterizedTypeReference<List<AlbumResBean>>() {
-        });
-        List<AlbumResBean> albumsList = albumsListResponse.getBody(); 
-        //List<AlbumResBean> albumsList =restTemplate.getForObject(albumsUrl, List.class);
-		
-        
-        
-		
+        UserDto userDto =userMapper.toUserDtoFromUser(user); 
 		/*
-		 * logger.info("Before calling albums Microservice"); List<AlbumResponseModel>
-		 * albumsList = albumsServiceClient.getAlbums(userId);
-		 * logger.info("After calling albums Microservice");
+		 * String albumsUrl = String.format(environment.getProperty("albums.url"),
+		 * userId);
+		 * 
+		 * ResponseEntity<List<AlbumResBean>> albumsListResponse =
+		 * restTemplate.exchange(albumsUrl, HttpMethod.GET, null, new
+		 * ParameterizedTypeReference<List<AlbumResBean>>() { });
+		 * 
+		 * List<AlbumResBean> albumsList = albumsListResponse.getBody();
 		 */
-		         
-		userDto.setAlbums(albumsList);
+        
+        List<AlbumResBean> albums = albumServicerClient.getAlbums(userId);
+		
+		userDto.setAlbums(albums);
 		
 		return userDto;
-		//return new UserDto();
 	}
 	
 
