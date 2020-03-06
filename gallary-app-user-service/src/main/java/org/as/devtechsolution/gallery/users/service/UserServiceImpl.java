@@ -11,6 +11,8 @@ import org.as.devtechsolution.gallery.users.dto.UserDto;
 import org.as.devtechsolution.gallery.users.entity.UserEntity;
 import org.as.devtechsolution.gallery.users.mapper.UserMapper;
 import org.as.devtechsolution.gallery.users.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
@@ -22,6 +24,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import feign.FeignException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,6 +39,7 @@ public class UserServiceImpl implements UserService {
 	 * @Autowired private RestTemplate restTemplate;
 	 */
 	private AlbumServiceClient albumServicerClient;
+	Logger logger= LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	public UserServiceImpl(UserRepository userRepository,
@@ -103,7 +108,12 @@ public class UserServiceImpl implements UserService {
 		 * List<AlbumResBean> albumsList = albumsListResponse.getBody();
 		 */
         
-        List<AlbumResBean> albums = albumServicerClient.getAlbums(userId);
+        List<AlbumResBean> albums=null;
+		try {
+			albums = albumServicerClient.getAlbums(userId);
+		} catch (FeignException e) {
+			logger.error(e.getLocalizedMessage());
+		}
 		
 		userDto.setAlbums(albums);
 		

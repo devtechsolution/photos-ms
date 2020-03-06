@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name="albums-ms")
 public interface AlbumServiceClient {
 	
-	@GetMapping("/users/{id}/albums")
+	@GetMapping("/users/{id}/albumsss")
 	public List<AlbumResBean> getAlbums(@PathVariable String id) ;
 
 }
