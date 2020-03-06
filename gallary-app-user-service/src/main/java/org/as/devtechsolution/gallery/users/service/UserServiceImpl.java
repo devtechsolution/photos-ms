@@ -108,12 +108,12 @@ public class UserServiceImpl implements UserService {
 		 * List<AlbumResBean> albumsList = albumsListResponse.getBody();
 		 */
         
-        List<AlbumResBean> albums=null;
-		try {
-			albums = albumServicerClient.getAlbums(userId);
-		} catch (FeignException e) {
-			logger.error(e.getLocalizedMessage());
-		}
+		/*
+		 * List<AlbumResBean> albums=null; try { albums =
+		 * albumServicerClient.getAlbums(userId); } catch (FeignException e) {
+		 * logger.error(e.getLocalizedMessage()); }
+		 */
+        List<AlbumResBean> albums=albumServicerClient.getAlbums(userId);
 		
 		userDto.setAlbums(albums);
 		

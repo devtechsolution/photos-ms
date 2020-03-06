@@ -1,5 +1,6 @@
 package org.as.devtechsolution.gallery.users;
 
+import org.as.devtechsolution.gallery.users.exception.FeignErrorDecoder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -37,5 +38,10 @@ public class GallaryAppUserServiceApplication {
 		
 		return Logger.Level.FULL;
 	}
+	
+	/*
+	 * @Bean public FeignErrorDecoder getFeignErrorDecoder()}{ return new
+	 * FeignErrorDecoder(); }
+	 */
 
 }
