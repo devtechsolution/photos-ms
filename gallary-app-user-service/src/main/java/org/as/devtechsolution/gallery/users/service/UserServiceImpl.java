@@ -29,96 +29,106 @@ import feign.FeignException;
 
 @Service
 public class UserServiceImpl implements UserService {
-	//@Autowired
+	// @Autowired
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
-	
+
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final Environment environment;
 	/*
 	 * @Autowired private RestTemplate restTemplate;
 	 */
 	private AlbumServiceClient albumServicerClient;
-	Logger logger= LoggerFactory.getLogger(this.getClass());
-	
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	@Autowired
-	public UserServiceImpl(UserRepository userRepository,
-			UserMapper userMapper, BCryptPasswordEncoder bCryptPasswordEncoder,Environment environment, 
+	public UserServiceImpl(UserRepository userRepository, UserMapper userMapper,
+			BCryptPasswordEncoder bCryptPasswordEncoder, Environment environment,
 			AlbumServiceClient albumServicerClient) {
 		this.userRepository = userRepository;
 		this.userMapper = userMapper;
-		this.bCryptPasswordEncoder=bCryptPasswordEncoder;
-		this.environment=environment;
-		this.albumServicerClient=albumServicerClient;
+		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+		this.environment = environment;
+		this.albumServicerClient = albumServicerClient;
 	}
-
 
 	@Override
 	public UserDto createUser(UserDto userDetails) {
-		
+
 		userDetails.setUserId(UUID.randomUUID().toString());
 		userDetails.setEncryptedPassword(bCryptPasswordEncoder.encode(userDetails.getPassword()));
-		UserEntity user= userMapper.toUserFromUserDto(userDetails);
+		UserEntity user = userMapper.toUserFromUserDto(userDetails);
 		userRepository.save(user);
-		UserDto userDto= userMapper.toUserDtoFromUser(user);
-	
+		UserDto userDto = userMapper.toUserDtoFromUser(user);
+
 		return userDto;
 	}
-
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Optional<UserEntity> userEntity = userRepository.findByEmail(username);
-		if(userEntity.isPresent()) {
-			UserEntity user= userEntity.get();
-			return new User(user.getEmail(), user.getEncryptedPassword(), true, true, true, 
-					true, new ArrayList<>());
-		}else 
+		if (userEntity.isPresent()) {
+			UserEntity user = userEntity.get();
+			return new User(user.getEmail(), user.getEncryptedPassword(), true, true, true, true, new ArrayList<>());
+		} else
 			throw new UsernameNotFoundException(username);
-		
-		
-	}
 
+	}
 
 	@Override
 	public UserDto getUserDetailsByEmail(String email) {
 		Optional<UserEntity> userEntity = userRepository.findByEmail(email);
-		if(userEntity.isPresent()) {
-			UserEntity user= userEntity.get();
+		if (userEntity.isPresent()) {
+			UserEntity user = userEntity.get();
 			return userMapper.toUserDtoFromUser(user);
-		}else 
+		} else
 			throw new UsernameNotFoundException(email);
 	}
-	
+
 	@Override
 	public UserDto getUserByUserId(String userId) {
-		
-        UserEntity user = userRepository.findByUserId(userId);     
-        if(user == null) throw new UsernameNotFoundException("User not found");
-        
-        UserDto userDto =userMapper.toUserDtoFromUser(user); 
-		/*
-		 * String albumsUrl = String.format(environment.getProperty("albums.url"),
-		 * userId);
-		 * 
-		 * ResponseEntity<List<AlbumResBean>> albumsListResponse =
-		 * restTemplate.exchange(albumsUrl, HttpMethod.GET, null, new
-		 * ParameterizedTypeReference<List<AlbumResBean>>() { });
-		 * 
-		 * List<AlbumResBean> albumsList = albumsListResponse.getBody();
-		 */
-        
-		/*
-		 * List<AlbumResBean> albums=null; try { albums =
-		 * albumServicerClient.getAlbums(userId); } catch (FeignException e) {
-		 * logger.error(e.getLocalizedMessage()); }
-		 */
-        List<AlbumResBean> albums=albumServicerClient.getAlbums(userId);
-		
+
+		UserEntity user = userRepository.findByUserId(userId);
+		if (user == null)
+			throw new UsernameNotFoundException("User not found");
+
+		UserDto userDto = userMapper.toUserDtoFromUser(user);
+		logger.info("Before calling albums Microservice");
+		List<AlbumResBean> albums = albumServicerClient.getAlbums(userId);
+		logger.info("After calling albums Microservice");
 		userDto.setAlbums(albums);
-		
+
 		return userDto;
 	}
-	
+
+	/*
+	 * @Override public UserDto getUserByUserId(String userId) {
+	 * 
+	 * UserEntity user = userRepository.findByUserId(userId); if(user == null) throw
+	 * new UsernameNotFoundException("User not found");
+	 * 
+	 * UserDto userDto =userMapper.toUserDtoFromUser(user);
+	 * 
+	 * String albumsUrl = String.format(environment.getProperty("albums.url"),
+	 * userId);
+	 * 
+	 * ResponseEntity<List<AlbumResBean>> albumsListResponse =
+	 * restTemplate.exchange(albumsUrl, HttpMethod.GET, null, new
+	 * ParameterizedTypeReference<List<AlbumResBean>>() { });
+	 * 
+	 * List<AlbumResBean> albumsList = albumsListResponse.getBody();
+	 * 
+	 * 
+	 * 
+	 * List<AlbumResBean> albums=null; try { albums =
+	 * albumServicerClient.getAlbums(userId); } catch (FeignException e) {
+	 * logger.error(e.getLocalizedMessage()); }
+	 * 
+	 * List<AlbumResBean> albums=albumServicerClient.getAlbums(userId);
+	 * 
+	 * userDto.setAlbums(albums);
+	 * 
+	 * return userDto; }
+	 */
 
 }
