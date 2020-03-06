@@ -18,7 +18,7 @@ import feign.hystrix.FallbackFactory;
 @FeignClient(name="albums-ms", fallbackFactory=AlbumFallbackFactory.class)
 public interface AlbumServiceClient {
 	
-	@GetMapping("/users/{id}/albumss")
+	@GetMapping("/users/{id}/albums")
 	public List<AlbumResBean> getAlbums(@PathVariable String id) ;
 
 }
